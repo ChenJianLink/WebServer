@@ -7,10 +7,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 /**
- * 处理器
- * 
- * @author 裴新 QQ:3401997271
- *
+ * web处理器
  */
 public class WebHandler extends DefaultHandler{
 	private List<Entity> entitys  = new ArrayList<Entity>();

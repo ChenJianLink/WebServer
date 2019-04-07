@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ *web容器
+ */
 public class WebContext {
 	private List<Entity> entitys  =null;
 	private List<Mapping> mappings =null;

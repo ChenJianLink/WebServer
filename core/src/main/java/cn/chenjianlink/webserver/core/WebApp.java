@@ -3,6 +3,9 @@ package cn.chenjianlink.webserver.core;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+/**
+ * 解析web.xml的相关类
+ */
 public class WebApp {
 	private static WebContext  webContext ;
 	static {
