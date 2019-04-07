@@ -1,8 +1,10 @@
-package cn.chenjianlink.webserver.core;
+package cn.chenjianlink.webserver.core.context;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.chenjianlink.webserver.core.servlet.Entity;
+import cn.chenjianlink.webserver.core.servlet.Mapping;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

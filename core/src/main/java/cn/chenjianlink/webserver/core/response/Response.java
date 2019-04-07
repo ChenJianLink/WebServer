@@ -1,4 +1,4 @@
-package cn.chenjianlink.webserver.core;
+package cn.chenjianlink.webserver.core.response;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package cn.chenjianlink.webserver.core;
+package cn.chenjianlink.webserver.core.servlet;
 
 /*
  * servlet名称对应的类

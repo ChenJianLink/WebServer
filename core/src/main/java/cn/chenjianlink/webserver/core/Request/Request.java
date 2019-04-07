@@ -1,4 +1,4 @@
-package cn.chenjianlink.webserver.core;
+package cn.chenjianlink.webserver.core.Request;
 
 import java.io.IOException;
 import java.io.InputStream;
