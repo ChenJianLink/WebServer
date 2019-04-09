@@ -40,7 +40,6 @@ public class Server {
             serverSocket = new ServerSocket(port);
             isRunning = true;
             logger.info("服务器已启动......");
-            receive();
         } catch (IOException e) {
             logger.error("服务器启动失败....", e);
             e.printStackTrace();

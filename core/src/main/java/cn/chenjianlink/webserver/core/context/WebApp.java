@@ -1,8 +1,7 @@
 package cn.chenjianlink.webserver.core.context;
 
 import cn.chenjianlink.webserver.core.servlet.Servlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.log4j.Log4j;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -10,14 +9,14 @@ import javax.xml.parsers.SAXParserFactory;
 /**
  * 解析web.xml的相关类
  */
+@Log4j
 public class WebApp {
     private static WebContext webContext;
     //日志处理
-    private static final Log logger = LogFactory.getLog(WebApp.class);
 
     static {
         try {
-            logger.info("开始解析web.xml文件");
+            log.info("开始解析web.xml文件");
             //SAX解析
             //1、获取解析工厂
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -33,7 +32,7 @@ public class WebApp {
             //获取数据
             webContext = new WebContext(handler.getEntitys(), handler.getMappings());
         } catch (Exception e) {
-            logger.error("解析配置文件错误", e);
+            log.error("解析配置文件错误", e);
         }
     }
 
@@ -45,11 +44,11 @@ public class WebApp {
      */
     public static Servlet getServletFromUrl(String url) {
         String className = webContext.getClz("/" + url);
-        Class clz;
+        Class clazz;
         try {
-            System.out.println(url + "-->" + className + "-->");
-            clz = Class.forName(className);
-            Servlet servlet = (Servlet) clz.getConstructor().newInstance();
+            log.info(url + "-->" + className + "-->");
+            clazz = Class.forName(className);
+            Servlet servlet = (Servlet) clazz.getConstructor().newInstance();
             return servlet;
         } catch (Exception e) {
 

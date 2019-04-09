@@ -1,5 +1,7 @@
 package cn.chenjianlink.webserver.core.Request;
 
+import lombok.extern.log4j.Log4j;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -13,6 +15,7 @@ import java.util.Map;
 /**
  * 封装请求协议: 封装请求参数为Map
  */
+@Log4j
 public class Request {
     //协议信息
     private String requestInfo;
@@ -47,12 +50,9 @@ public class Request {
 
     //分解字符串
     private void parseRequestInfo() {
-        System.out.println("------分解-------");
-        System.out.println("---1、获取请求方式: 开头到第一个/------");
+        log.info("开始分解请求");
         this.method = this.requestInfo.substring(0, this.requestInfo.indexOf("/")).toLowerCase();
         this.method = this.method.trim();
-        System.out.println("---2、获取请求url: 第一个/ 到 HTTP/------");
-        System.out.println("---可能包含请求参数? 前面的为url------");
         //1)、获取/的位置
         int startIdx = this.requestInfo.indexOf("/") + 1;
         //2)、获取 HTTP/的位置
@@ -66,21 +66,18 @@ public class Request {
             this.url = urlArray[0];
             queryStr = urlArray[1];
         }
-        System.out.println(this.url);
 
-        System.out.println("---3、获取请求参数:如果Get已经获取,如果是post可能在请求体中------");
-
+        log.info("获取请求参数");
         if (method.equals("post")) {
             String qStr = this.requestInfo.substring(this.requestInfo.lastIndexOf(CRLF)).trim();
-            System.out.println(qStr + "-->");
             if (null == queryStr) {
                 queryStr = qStr;
             } else {
                 queryStr += "&" + qStr;
             }
         }
-        queryStr = null == queryStr ? "" : queryStr;
-        System.out.println(method + "-->" + url + "-->" + queryStr);
+        queryStr = null == queryStr ? "无参数" : queryStr;
+        log.info("请求方式：" + method + "-->" + "请求地址:" + url + "-->" + "请求参数:" + queryStr);
         convertMap();
     }
 
