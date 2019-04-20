@@ -1,6 +1,6 @@
 package cn.chenjianlink.webserver.example.web;
 
-import cn.chenjianlink.webserver.core.Request.Request;
+import cn.chenjianlink.webserver.core.request.Request;
 import cn.chenjianlink.webserver.core.response.Response;
 import cn.chenjianlink.webserver.core.servlet.Servlet;
 

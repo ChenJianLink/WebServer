@@ -1,6 +1,6 @@
-package cn.chenjianlink.webserver.core.Request;
+package cn.chenjianlink.webserver.core.request;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,17 +15,27 @@ import java.util.Map;
 /**
  * 封装请求协议: 封装请求参数为Map
  */
-@Log4j
+@Slf4j
 public class Request {
-    //协议信息
+    /**
+     * 协议信息
+     */
     private String requestInfo;
-    //请求方式
+    /**
+     * 请求方式
+     */
     private String method;
-    //请求url
+    /**
+     * 请求url
+     */
     private String url;
-    //请求参数
+    /**
+     * 请求参数
+     */
     private String queryStr;
-    //存储参数
+    /**
+     * 存储参数
+     */
     private Map<String, List<String>> parameterMap;
     private final String CRLF = "\r\n";
 
@@ -48,7 +58,9 @@ public class Request {
         parseRequestInfo();
     }
 
-    //分解字符串
+    /**分解字符串
+     *
+     */
     private void parseRequestInfo() {
         log.info("开始分解请求");
         this.method = this.requestInfo.substring(0, this.requestInfo.indexOf("/")).toLowerCase();
@@ -61,7 +73,8 @@ public class Request {
         this.url = this.requestInfo.substring(startIdx, endIdx).trim();
         //4)、获取？的位置
         int queryIdx = this.url.indexOf("?");
-        if (queryIdx >= 0) {//表示存在请求参数
+        if (queryIdx >= 0) {
+            //表示存在请求参数
             String[] urlArray = this.url.split("\\?");
             this.url = urlArray[0];
             queryStr = urlArray[1];
@@ -81,7 +94,9 @@ public class Request {
         convertMap();
     }
 
-    //处理请求参数为Map
+    /**处理请求参数为Map
+     *
+     */
     private void convertMap() {
         //1、分割字符串 &
         String[] keyValues = this.queryStr.split("&");
@@ -93,7 +108,8 @@ public class Request {
             String key = kv[0];
             String value = kv[1] == null ? null : decode(kv[1], "utf-8");
             //存储到map中
-            if (!parameterMap.containsKey(key)) { //第一次
+            if (!parameterMap.containsKey(key)) {
+                //第一次
                 parameterMap.put(key, new ArrayList<String>());
             }
             parameterMap.get(key).add(value);

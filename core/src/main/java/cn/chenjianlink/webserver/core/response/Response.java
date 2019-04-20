@@ -11,9 +11,14 @@ public class Response {
 	private BufferedWriter bw;
 	//正文
 	private StringBuilder content;
-	//协议头（状态行与请求头 回车）信息
+	/*
+	  协议头（状态行与请求头 回车）信息
+	 */
 	private StringBuilder headInfo;
-	private int len; //正文的字节数
+	/**
+	  内容长度
+	 */
+	private int len;
 	
 	private final String BLANK =" ";
 	private final  String CRLF = "\r\n";

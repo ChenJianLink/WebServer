@@ -1,37 +1,55 @@
 package cn.chenjianlink.webserver.core.context;
 
 import cn.chenjianlink.webserver.core.servlet.Servlet;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import java.util.List;
 
 /**
- * 解析web.xml的相关类
+ * 解析web.xml并储存内容
  */
-@Log4j
+@Slf4j
 public class WebApp {
-    private static WebContext webContext;
-    //日志处理
+    private static WebContext webContext = new WebContext();
 
+    private static final String SERVLET = "servlet";
+
+    private static final String SERVLET_NAME = "servlet-name";
+
+    private static final String SERVLET_CLASS = "servlet-class";
+
+    private static final String SERVLET_MAPPING = "servlet-mapping";
+
+    private static final String URL_PATTERN = "url-pattern";
+
+    //对web.xml解析
     static {
         try {
             log.info("开始解析web.xml文件");
-            //SAX解析
-            //1、获取解析工厂
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            //2、从解析工厂获取解析器
-            SAXParser parse = factory.newSAXParser();
-            //3、编写处理器
-            //4、加载文档 Document 注册处理器
-            WebHandler handler = new WebHandler();
-            //5、解析
-            parse.parse(Thread.currentThread().getContextClassLoader()
-                            .getResourceAsStream("web.xml")
-                    , handler);
-            //获取数据
-            webContext = new WebContext(handler.getEntitys(), handler.getMappings());
-        } catch (Exception e) {
+            //dom解析
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(WebApp.class.getResourceAsStream("/web.xml"));
+            //获取根节点
+            Element root = document.getRootElement();
+            //解析元素
+            List<Element> servlets = root.elements(SERVLET);
+            for (Element serlvet : servlets) {
+                String servletName = serlvet.element(SERVLET_NAME).getText();
+                String servletClass = serlvet.element(SERVLET_CLASS).getText();
+                webContext.setServletValue(servletName, servletClass);
+            }
+            List<Element> servletMappings = root.elements(SERVLET_MAPPING);
+            for (Element serlvetMapping : servletMappings) {
+                String servletName = serlvetMapping.element(SERVLET_NAME).getText();
+                String urlPattern = serlvetMapping.element(URL_PATTERN).getText();
+                webContext.setServletMappingValue(servletName, urlPattern);
+            }
+        } catch (DocumentException e) {
+            e.printStackTrace();
             log.error("解析配置文件错误", e);
         }
     }
@@ -43,15 +61,22 @@ public class WebApp {
      * @return
      */
     public static Servlet getServletFromUrl(String url) {
-        String className = webContext.getClz("/" + url);
+        String className = webContext.getClazz("/" + url);
         Class clazz;
         try {
-            log.info(url + "-->" + className + "-->");
+            log.info("请求路径：" + url + "-->" + "对应的servlet:" + className);
             clazz = Class.forName(className);
-            Servlet servlet = (Servlet) clazz.getConstructor().newInstance();
+            Servlet servlet = (Servlet) clazz.newInstance();
             return servlet;
-        } catch (Exception e) {
-
+        } catch (ClassNotFoundException e) {
+            log.error("未找到对应的servlet", e);
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            log.error("解析加载错误", e);
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            log.error("解析加载错误", e);
         }
         return null;
     }
