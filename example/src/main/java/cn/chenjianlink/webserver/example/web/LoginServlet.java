@@ -2,11 +2,12 @@ package cn.chenjianlink.webserver.example.web;
 
 import cn.chenjianlink.webserver.core.request.Request;
 import cn.chenjianlink.webserver.core.response.Response;
+import cn.chenjianlink.webserver.core.servlet.HttpServlet;
 import cn.chenjianlink.webserver.core.servlet.Servlet;
 
 import java.io.IOException;
 
-public class LoginServlet implements Servlet {
+public class LoginServlet extends HttpServlet {
 
     @Override
     public void service(Request request, Response response) {
@@ -16,5 +17,15 @@ public class LoginServlet implements Servlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void doGet(Request request, Response response) {
+
+    }
+
+    @Override
+    public void doPost(Request request, Response response) {
+
     }
 }
