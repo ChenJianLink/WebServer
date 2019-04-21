@@ -1,10 +1,10 @@
 package cn.chenjianlink.webserver.core.request;
 
+import cn.chenjianlink.webserver.core.enumeration.HttpMethod;
+import cn.chenjianlink.webserver.core.exception.IllegalRequestException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,12 +45,16 @@ public class Request {
 
     public Request(InputStream is) {
         parameterMap = new HashMap<String, List<String>>();
-        byte[] datas = new byte[1024 * 1024 * 1024];
-        int len;
         try {
-            len = is.read(datas);
-            this.requestInfo = new String(datas, 0, len);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
+            byte[] data = new byte[bufferedInputStream.available()];
+            int len = bufferedInputStream.read(data);
+            if (len<=0){
+                throw new IllegalRequestException("非法请求");
+            }
+            this.requestInfo = new String(data, 0, len);
         } catch (IOException e) {
+            log.error("请求异常", e);
             e.printStackTrace();
             return;
         }
@@ -58,12 +62,12 @@ public class Request {
         parseRequestInfo();
     }
 
-    /**分解字符串
-     *
+    /**
+     * 分解字符串
      */
     private void parseRequestInfo() {
         log.info("开始分解请求");
-        this.method = this.requestInfo.substring(0, this.requestInfo.indexOf("/")).toLowerCase();
+        this.method = this.requestInfo.substring(0, this.requestInfo.indexOf("/")).toUpperCase();
         this.method = this.method.trim();
         //1)、获取/的位置
         int startIdx = this.requestInfo.indexOf("/") + 1;
@@ -81,7 +85,7 @@ public class Request {
         }
 
         log.info("获取请求参数");
-        if (method.equals("post")) {
+        if (method.equals(HttpMethod.POST.toString())) {
             String qStr = this.requestInfo.substring(this.requestInfo.lastIndexOf(CRLF)).trim();
             if (null == queryStr) {
                 queryStr = qStr;
@@ -94,8 +98,8 @@ public class Request {
         convertMap();
     }
 
-    /**处理请求参数为Map
-     *
+    /**
+     * 处理请求参数为Map
      */
     private void convertMap() {
         //1、分割字符串 &

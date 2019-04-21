@@ -1,5 +1,7 @@
 package cn.chenjianlink.webserver.core;
 
+import cn.chenjianlink.webserver.core.context.WebApp;
+import cn.chenjianlink.webserver.core.servlet.DispatcherServlet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -34,6 +36,7 @@ public class Server {
 
     /**
      * 启动服务
+     *
      * @param port
      */
     public void start(Integer port) {
@@ -45,8 +48,9 @@ public class Server {
             log.info("服务器启动中......");
             serverSocket = new ServerSocket(port);
             isRunning = true;
+            WebApp.init();
             log.info("服务器已启动......");
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("服务器启动失败....", e);
             e.printStackTrace();
             stop();
@@ -57,21 +61,19 @@ public class Server {
      * 接受连接处理
      */
     public void receive() {
-        while (isRunning) {
-            try {
-                Socket client = serverSocket.accept();
-                log.info("一个客户端建立了连接....");
-                //多线程处理
-                new Thread(new Dispatcher(client)).start();
-            } catch (IOException e) {
-                log.error("客户端错误", e);
-                e.printStackTrace();
-            }
+        try {
+            Socket client = serverSocket.accept();
+            log.info("一个客户端建立了连接....");
+            //多线程处理
+            new Thread(new DispatcherServlet(client)).start();
+        } catch (IOException e) {
+            log.error("客户端错误", e);
+            e.printStackTrace();
         }
     }
 
-    /**停止服务
-     *
+    /**
+     * 停止服务
      */
     public void stop() {
         isRunning = false;
@@ -84,3 +86,4 @@ public class Server {
         }
     }
 }
+

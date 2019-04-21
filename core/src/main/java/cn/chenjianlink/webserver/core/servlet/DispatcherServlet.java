@@ -1,9 +1,8 @@
-package cn.chenjianlink.webserver.core;
+package cn.chenjianlink.webserver.core.servlet;
 
 import cn.chenjianlink.webserver.core.request.Request;
 import cn.chenjianlink.webserver.core.context.WebApp;
 import cn.chenjianlink.webserver.core.response.Response;
-import cn.chenjianlink.webserver.core.servlet.Servlet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -16,14 +15,14 @@ import java.net.Socket;
  * 分发器：加入状态内容处理
  */
 @Slf4j
-public class Dispatcher implements Runnable {
+public class DispatcherServlet implements Runnable {
     private Socket client;
     private Request request;
     private Response response;
 
     private String index = "/";
 
-    public Dispatcher(Socket client) {
+    public DispatcherServlet(Socket client) {
         this.client = client;
         try {
             //获取请求协议

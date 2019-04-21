@@ -1,5 +1,6 @@
 package cn.chenjianlink.webserver.core.context;
 
+import cn.chenjianlink.webserver.core.exception.ServerStartException;
 import cn.chenjianlink.webserver.core.servlet.Servlet;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
@@ -26,8 +27,10 @@ public class WebApp {
 
     private static final String URL_PATTERN = "url-pattern";
 
-    //对web.xml解析
-    static {
+    /**
+     * 对web.xml进行解析
+     */
+    public static void init() throws ServerStartException{
         try {
             log.info("开始解析web.xml文件");
             //dom解析
@@ -41,6 +44,8 @@ public class WebApp {
                 String servletName = serlvet.element(SERVLET_NAME).getText();
                 String servletClass = serlvet.element(SERVLET_CLASS).getText();
                 webContext.setServletValue(servletName, servletClass);
+                Servlet servlet = (Servlet) Class.forName(servletClass).newInstance();
+                webContext.setServlet(servletName, servlet);
             }
             List<Element> servletMappings = root.elements(SERVLET_MAPPING);
             for (Element serlvetMapping : servletMappings) {
@@ -48,9 +53,15 @@ public class WebApp {
                 String urlPattern = serlvetMapping.element(URL_PATTERN).getText();
                 webContext.setServletMappingValue(servletName, urlPattern);
             }
+            log.info("web.xml解析完成");
         } catch (DocumentException e) {
             e.printStackTrace();
-            log.error("解析配置文件错误", e);
+            log.error("解析web.xml文件错误", e);
+            throw new ServerStartException("解析web.xml文件错误");
+        } catch (ReflectiveOperationException e) {
+            log.error("创建servlet实例异常", e);
+            e.printStackTrace();
+            throw new ServerStartException("创建servlet实例异常");
         }
     }
 
@@ -61,23 +72,7 @@ public class WebApp {
      * @return
      */
     public static Servlet getServletFromUrl(String url) {
-        String className = webContext.getClazz("/" + url);
-        Class clazz;
-        try {
-            log.info("请求路径：" + url + "-->" + "对应的servlet:" + className);
-            clazz = Class.forName(className);
-            Servlet servlet = (Servlet) clazz.newInstance();
-            return servlet;
-        } catch (ClassNotFoundException e) {
-            log.error("未找到对应的servlet", e);
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            log.error("解析加载错误", e);
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-            log.error("解析加载错误", e);
-        }
-        return null;
+        log.info("获取对应的servlet");
+        return webContext.getServlet("/" + url);
     }
 }
