@@ -57,6 +57,7 @@ public class DispatcherServlet implements Runnable {
             }
         } catch (Exception e) {
             try {
+                log.error("服务器内部错误", e);
                 InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("500.html");
                 String html = inputStreamToSring(is);
                 response.println(html);

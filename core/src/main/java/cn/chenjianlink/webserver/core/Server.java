@@ -14,25 +14,24 @@ import java.net.Socket;
 @Slf4j
 public class Server {
     private ServerSocket serverSocket;
-    private boolean isRunning;
     /**
      * 默认端口
      */
     private static final int DEFAULT_PORT = 8080;
 
-    /**
-     * 使用单例模式加载server类
-     */
-    private static class ServerInstance {
-        private static final Server INSTANCE = new Server();
-    }
+//    /**
+//     * 使用单例模式加载server类
+//     */
+//    private static class ServerInstance {
+//        private static final Server INSTANCE = new Server();
+//    }
+//
+//    public static Server getInstance() {
+//        return ServerInstance.INSTANCE;
+//    }
 
-    public static Server getInstance() {
-        return ServerInstance.INSTANCE;
-    }
-
-    private Server() {
-    }
+//    private Server() {
+//    }
 
     /**
      * 启动服务
@@ -47,7 +46,6 @@ public class Server {
         try {
             log.info("服务器启动中......");
             serverSocket = new ServerSocket(port);
-            isRunning = true;
             WebApp.init();
             log.info("服务器已启动......");
         } catch (Exception e) {
@@ -61,14 +59,16 @@ public class Server {
      * 接受连接处理
      */
     public void receive() {
-        try {
-            Socket client = serverSocket.accept();
-            log.info("一个客户端建立了连接....");
-            //多线程处理
-            new Thread(new DispatcherServlet(client)).start();
-        } catch (IOException e) {
-            log.error("客户端错误", e);
-            e.printStackTrace();
+        while (true) {
+            try {
+                Socket client = serverSocket.accept();
+                log.info("一个客户端建立了连接....");
+                //多线程处理
+                new Thread(new DispatcherServlet(client)).start();
+            } catch (IOException e) {
+                log.error("客户端错误", e);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -76,7 +76,6 @@ public class Server {
      * 停止服务
      */
     public void stop() {
-        isRunning = false;
         try {
             this.serverSocket.close();
             log.info("服务器已停止");

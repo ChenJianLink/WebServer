@@ -10,7 +10,7 @@ public class WebServerController {
 
     public static void run() {
         //启动服务器
-        Server server = Server.getInstance();
+        Server server = new Server();
         int port = PropertiesUtils.getPort();
         server.start(port);
         server.receive();

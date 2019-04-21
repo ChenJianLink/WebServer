@@ -22,7 +22,7 @@ public class WebContext {
     /**
      * 存储对应的servlet
      */
-    private Map<String, Servlet> servletMap = new HashMap<>();
+    private Map<String, Servlet> servletMap = new HashMap<String, Servlet>();
 
     /**
      * 存储servlet
@@ -40,7 +40,7 @@ public class WebContext {
      */
     public Servlet getServlet(String pattern) {
         String name = servletMapping.get(pattern);
-        return servletMap.get(servlet.get(name));
+        return servletMap.get(name);
     }
 
     public void setServletValue(String servletName, String servletClass) {

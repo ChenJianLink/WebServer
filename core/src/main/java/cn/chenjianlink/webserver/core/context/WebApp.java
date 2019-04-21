@@ -30,7 +30,7 @@ public class WebApp {
     /**
      * 对web.xml进行解析
      */
-    public static void init() throws ServerStartException{
+    public static void init() throws ServerStartException {
         try {
             log.info("开始解析web.xml文件");
             //dom解析
@@ -44,8 +44,8 @@ public class WebApp {
                 String servletName = serlvet.element(SERVLET_NAME).getText();
                 String servletClass = serlvet.element(SERVLET_CLASS).getText();
                 webContext.setServletValue(servletName, servletClass);
-                Servlet servlet = (Servlet) Class.forName(servletClass).newInstance();
-                webContext.setServlet(servletName, servlet);
+                Servlet servletClazz = (Servlet) Class.forName(servletClass).newInstance();
+                webContext.setServlet(servletName, servletClazz);
             }
             List<Element> servletMappings = root.elements(SERVLET_MAPPING);
             for (Element serlvetMapping : servletMappings) {
@@ -72,7 +72,8 @@ public class WebApp {
      * @return
      */
     public static Servlet getServletFromUrl(String url) {
-        log.info("获取对应的servlet");
-        return webContext.getServlet("/" + url);
+        Servlet servlet = webContext.getServlet("/" + url);
+        log.info(url + "-->" + "获取对应的servlet:" + servlet.getClass().getName());
+        return servlet;
     }
 }
