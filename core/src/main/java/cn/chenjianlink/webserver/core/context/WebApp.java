@@ -43,7 +43,6 @@ public class WebApp {
             for (Element serlvet : servlets) {
                 String servletName = serlvet.element(SERVLET_NAME).getText();
                 String servletClass = serlvet.element(SERVLET_CLASS).getText();
-                webContext.setServletValue(servletName, servletClass);
                 Servlet servletClazz = (Servlet) Class.forName(servletClass).newInstance();
                 webContext.setServlet(servletName, servletClazz);
             }
@@ -73,7 +72,7 @@ public class WebApp {
      */
     public static Servlet getServletFromUrl(String url) {
         Servlet servlet = webContext.getServlet("/" + url);
-        log.info(url + "-->" + "获取对应的servlet:" + servlet.getClass().getName());
+        log.info(url + "-->" + "获取对应的servlet:" + (servlet == null ? null : servlet.getClass().getName()));
         return servlet;
     }
 }

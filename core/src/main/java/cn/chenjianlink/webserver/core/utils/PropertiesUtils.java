@@ -14,7 +14,7 @@ import java.util.Properties;
 @Slf4j
 public class PropertiesUtils {
     private static final String PORT = "webserver.port";
-    private static final Map<String,String> propertiesMap = new HashMap<>();
+    private static final Map<String,String> PROOERTIES = new HashMap<>();
 
     static {
         try {
@@ -23,7 +23,7 @@ public class PropertiesUtils {
             Properties prop = new Properties();
             prop.load(inputStream);
             String port = prop.getProperty(PORT);
-            propertiesMap.put(PORT, port);
+            PROOERTIES.put(PORT, port);
             log.info("配置文件解析完成");
         } catch (IOException e) {
             log.error("配置文件解析错误", e);
@@ -37,7 +37,7 @@ public class PropertiesUtils {
      * @return
      */
     public static int getPort() {
-        String port = propertiesMap.get(PORT);
+        String port = PROOERTIES.get(PORT);
         return Integer.parseInt(port);
     }
 }

@@ -9,10 +9,6 @@ import java.util.Map;
  * web容器
  */
 public class WebContext {
-    /**
-     * key-->servlet-name  value -->servlet-class
-     */
-    private Map<String, String> servlet = new HashMap<String, String>();
 
     /**
      * key -->url-pattern value -->servlet-name 一对多关系
@@ -41,10 +37,6 @@ public class WebContext {
     public Servlet getServlet(String pattern) {
         String name = servletMapping.get(pattern);
         return servletMap.get(name);
-    }
-
-    public void setServletValue(String servletName, String servletClass) {
-        this.servlet.put(servletName, servletClass);
     }
 
     public void setServletMappingValue(String servletName, String urlPattern) {

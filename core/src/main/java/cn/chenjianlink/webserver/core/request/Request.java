@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,7 +95,7 @@ public class Request {
             }
         }
         queryStr = null == queryStr ? "无参数" : queryStr;
-        log.info("请求方式：" + method + "-->" + "请求地址:" + url + "-->" + "请求参数:" + queryStr);
+        log.info("请求方式：" + method + "-->" + "请求地址:" + url + " -->" + "请求参数:" + queryStr);
         convertMap();
     }
 
@@ -127,8 +128,9 @@ public class Request {
      */
     private String decode(String value, String enc) {
         try {
-            return java.net.URLDecoder.decode(value, enc);
+            return URLDecoder.decode(value, enc);
         } catch (UnsupportedEncodingException e) {
+            log.error("请求编码异常", e);
             e.printStackTrace();
         }
         return null;
