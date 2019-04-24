@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cn.chenjianlink.webserver.core.comment.GeneralResources.CRLF;
+
 /**
- * 封装请求协议: 封装请求参数为Map
+ * 封装请求协议
+ * @author chenjian
  */
 @Slf4j
 public class Request {
@@ -38,7 +41,6 @@ public class Request {
      * 存储参数
      */
     private Map<String, List<String>> parameterMap;
-    private final String CRLF = "\r\n";
 
     public Request(Socket client) throws IOException {
         this(client.getInputStream());
@@ -50,7 +52,7 @@ public class Request {
             BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
             byte[] data = new byte[bufferedInputStream.available()];
             int len = bufferedInputStream.read(data);
-            if (len<=0){
+            if (len <= 0) {
                 throw new IllegalRequestException("非法请求");
             }
             this.requestInfo = new String(data, 0, len);
@@ -119,6 +121,7 @@ public class Request {
             }
             parameterMap.get(key).add(value);
         }
+        log.info("请求处理完成");
     }
 
     /**

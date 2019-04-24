@@ -9,6 +9,7 @@ import java.net.Socket;
 
 /**
  * 分发器：加入状态内容处理
+ * @author chenjian
  */
 @Slf4j
 public class Dispatcher implements Runnable {
@@ -27,7 +28,7 @@ public class Dispatcher implements Runnable {
             //获取请求处理器
             requestHandler = new RequestHandler();
         } catch (IOException e) {
-            log.error("", e);
+            log.error("获取请求协议失败", e);
             e.printStackTrace();
             this.release();
         }
@@ -40,7 +41,7 @@ public class Dispatcher implements Runnable {
             requestHandler.processRequest(request, response);
             log.info("请求处理完毕");
         } catch (IOException e) {
-            log.error("", e);
+            log.error("请求处理失败", e);
             e.printStackTrace();
         } finally {
             release();

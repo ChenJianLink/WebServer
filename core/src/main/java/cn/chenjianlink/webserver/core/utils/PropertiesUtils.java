@@ -10,11 +10,13 @@ import java.util.Properties;
 
 /**
  * 读取配置文件
+ *
+ * @author chenjian
  */
 @Slf4j
 public class PropertiesUtils {
     private static final String PORT = "webserver.port";
-    private static final Map<String,String> PROOERTIES = new HashMap<>();
+    private static final Map<String, String> PROOERTIES = new HashMap<>();
 
     static {
         try {

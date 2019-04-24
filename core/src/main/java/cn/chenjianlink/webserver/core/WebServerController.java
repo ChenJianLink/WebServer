@@ -7,10 +7,12 @@ import java.util.Scanner;
 
 /**
  * Web服务器控制器
+ *
+ * @author chenjian
  */
 public class WebServerController {
 
-    private static final String status= "EXIT";
+    private static final String STATUS = "EXIT";
 
     public static void run() {
         //启动服务器
@@ -21,7 +23,7 @@ public class WebServerController {
         String state;
         while (scanner.hasNext()) {
             state = scanner.next();
-            if (state.equals(status)) {
+            if (state.equals(STATUS)) {
                 server.stop();
                 System.exit(0);
             }

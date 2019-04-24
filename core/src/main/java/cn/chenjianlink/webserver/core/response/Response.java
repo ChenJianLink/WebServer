@@ -1,20 +1,27 @@
 package cn.chenjianlink.webserver.core.response;
 
 import cn.chenjianlink.webserver.core.enumeration.HttpStatus;
-import com.sun.istack.internal.Nullable;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Date;
 
+import static cn.chenjianlink.webserver.core.comment.GeneralResources.CRLF;
+import static cn.chenjianlink.webserver.core.enumeration.HttpStatus.OK;
+import static cn.chenjianlink.webserver.core.enumeration.HttpStatus.SERVER_ERROR;
+
+/**
+ * 响应协议
+ *
+ * @author chenjian
+ */
+@Slf4j
 public class Response {
-    private BufferedWriter bw;
+    private OutputStream os;
     /**
-     * 正文
+     * 文本正文
      */
     private StringBuilder content;
     /**
@@ -26,14 +33,13 @@ public class Response {
      */
     private int len;
 
-    private final String BLANK = " ";
-    private final String CRLF = "\r\n";
-    private final int DEFAULT_STATUS = 200;
     /**
-     * 响应编码
+     * 响应体
      */
-    @Setter
-    private Integer status;
+    private byte[] body;
+
+    private final static String BLANK = " ";
+    private final static String DEFAULT_CONTENTTYPE = "text/html;charset=UTF-8";
 
     private Response() {
         content = new StringBuilder();
@@ -44,7 +50,7 @@ public class Response {
     public Response(Socket client) {
         this();
         try {
-            bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+            os = client.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
             headInfo = null;
@@ -53,11 +59,11 @@ public class Response {
 
     public Response(OutputStream os) {
         this();
-        bw = new BufferedWriter(new OutputStreamWriter(os));
+        this.os = os;
     }
 
     /**
-     * 动态添加内容
+     * 动态添加文本内容
      *
      * @param info
      * @return
@@ -68,6 +74,12 @@ public class Response {
         return this;
     }
 
+    /**
+     * 一次性添加所有文本内容
+     *
+     * @param info
+     * @return
+     */
     public Response println(String info) {
         content.append(info).append(CRLF);
         len += (info + CRLF).getBytes().length;
@@ -76,22 +88,49 @@ public class Response {
 
 
     /**
+     * 通过流来构建响应体
+     *
+     * @param data
+     */
+    public void createbody(byte[] data) {
+        this.body = data;
+        len += data.length;
+    }
+
+    /**
      * 推送响应信息
      *
      * @throws IOException
      */
     public void write() throws IOException {
         if (null == headInfo) {
-            status = 500;
+            setHeader(SERVER_ERROR);
         }
-        if (status == null) {
-            createHeadInfo(DEFAULT_STATUS);
-        }else {
-            createHeadInfo(status);
+        if (null != headInfo && headInfo.length() <= 0) {
+            setHeader(OK);
         }
-        bw.append(headInfo);
-        bw.append(content);
-        bw.flush();
+        byte[] headInfoByte = headInfo.toString().getBytes();
+        if (body == null) {
+            log.info("使用print或者pringln构建响应体");
+            body = content.toString().getBytes();
+        }
+        try {
+            os.write(headInfoByte);
+            os.write(body);
+            os.flush();
+        } catch (IOException e) {
+            log.error("响应异常", e);
+        } finally {
+            os.close();
+        }
+    }
+
+    public void setHeader(HttpStatus status, String contentType) {
+        createHeadInfo(status, contentType);
+    }
+
+    public void setHeader(HttpStatus status) {
+        createHeadInfo(status, DEFAULT_CONTENTTYPE);
     }
 
     /**
@@ -99,16 +138,16 @@ public class Response {
      *
      * @param status
      */
-    private void createHeadInfo(int status) {
+    private void createHeadInfo(HttpStatus status, String contentType) {
         //1、响应行: HTTP/1.1
         headInfo.append("HTTP/1.1").append(BLANK);
-        headInfo.append(status).append(BLANK);
-        headInfo.append("OK").append(CRLF);
+        headInfo.append(status.getCode()).append(BLANK);
+        headInfo.append(status).append(CRLF);
         //2、响应头(最后一行存在空行):
         headInfo.append("Date:").append(new Date()).append(CRLF);
         headInfo.append("Server:").append("chenjianlink Server/0.0.1;charset=utf-8").append(CRLF);
         //设置响应类型
-        headInfo.append("Content-type:").append(" ").append(CRLF);
+        headInfo.append("Content-type:").append(contentType).append(CRLF);
         headInfo.append("Content-length:").append(len).append(CRLF);
         headInfo.append(CRLF);
     }

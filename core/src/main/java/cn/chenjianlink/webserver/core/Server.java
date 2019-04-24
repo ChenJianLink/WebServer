@@ -10,6 +10,7 @@ import java.net.Socket;
 
 /**
  * 服务器运行
+ * @author chenjian
  */
 @Slf4j
 public class Server {
@@ -17,7 +18,7 @@ public class Server {
     /**
      * 默认端口
      */
-    private final int DEFAULT_PORT = 8080;
+    private static final int DEFAULT_PORT = 8080;
 
     private Accepter accepter;
 
@@ -65,6 +66,7 @@ public class Server {
      */
     public void stop() {
         accepter.shutdown();
+        log.info("服务器已停止");
     }
 
     /**
@@ -89,8 +91,9 @@ public class Server {
         @Override
         public void interrupt() {
             try {
-                serverSocket.close();
-                log.info("服务器已停止");
+                if (serverSocket != null) {
+                    serverSocket.close();
+                }
             } catch (IOException e) {
                 log.error("服务器关闭异常", e);
                 e.printStackTrace();
