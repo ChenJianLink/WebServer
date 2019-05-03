@@ -17,9 +17,10 @@ public class WebServerController {
     public static void run() {
         //启动服务器
         Server server = Server.getInstance();
-        int port = PropertiesUtils.getPort();
+        Integer port = PropertiesUtils.getPort();
+        Integer connections = PropertiesUtils.getConnections();
         Scanner scanner = new Scanner(System.in);
-        server.start(port);
+        server.start(port, connections);
         String state;
         while (scanner.hasNext()) {
             state = scanner.next();
